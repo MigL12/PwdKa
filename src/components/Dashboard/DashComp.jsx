@@ -64,29 +64,33 @@
       const closeFilterMenu = () => {
         setIsFilterOpen(false);
       };
-
       const renderPostJob = () => {
+        const [showDisabilityOptions, setShowDisabilityOptions] = useState(false);
+        const [selectedDisabilities, setSelectedDisabilities] = useState([]);
+      
+        const handleDisabilityChange = (event) => {
+          const { value, checked } = event.target;
+          setSelectedDisabilities((prev) =>
+            checked
+              ? [...prev, value]
+              : prev.filter((disability) => disability !== value)
+          );
+        };
+      
+        const toggleDisabilityOptions = () => {
+          setShowDisabilityOptions((prev) => !prev);
+        };
+      
         return (
           <div>
             <h2 className="text-xl font-bold mb-1 text-custom-blue">Post a Job</h2>
-            <form onSubmit={handleSubmit} className="bg-blue-500 p-6 rounded-xl shadow-xl text-center ">
+            <form onSubmit={handleSubmit} className="bg-blue-500 p-6 rounded-xl shadow-xl text-center">
               <div className="mb-4 text-left">
                 <label className="block mb-2 text-white">Position Name</label>
                 <input
                   type="text"
                   name="positionName"
                   value={jobDetails.positionName}
-                  onChange={handleChange}
-                  className="p-2 w-full rounded shadow-lg"
-                  style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)" }}
-                  required
-                />
-              </div>
-              <div className="mb-4 text-left">
-                <label className="block mb-2 text-white">Job Description</label>
-                <textarea
-                  name="jobDescription"
-                  value={jobDetails.jobDescription}
                   onChange={handleChange}
                   className="p-2 w-full rounded shadow-lg"
                   style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)" }}
@@ -105,33 +109,31 @@
                 />
               </div>
               <div className="flex mb-4 space-x-4">
-      <div className="text-left w-1/2">
-        <label className="block mb-2 text-white">Min-Salary</label>
-        <input
-          type="text"
-          name="minSalary"
-          value={jobDetails.minSalary}
-          onChange={handleChange}
-          className="p-2 w-full rounded shadow-lg"
-          style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)" }}
-          required
-        />
-      </div>
-      <div className="text-left w-1/2">
-        <label className="block mb-2 text-white">Max-Salary</label>
-        <input
-          type="text"
-          name="maxSalary"
-          value={jobDetails.maxSalary}
-          onChange={handleChange}
-          className="p-2 w-full rounded shadow-lg"
-          style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)" }}
-          required
-        />
-      </div>
-    </div>
-
-            
+                <div className="text-left w-1/2">
+                  <label className="block mb-2 text-white">Min-Salary</label>
+                  <input
+                    type="text"
+                    name="minSalary"
+                    value={jobDetails.minSalary}
+                    onChange={handleChange}
+                    className="p-2 w-full rounded shadow-lg"
+                    style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)" }}
+                    required
+                  />
+                </div>
+                <div className="text-left w-1/2">
+                  <label className="block mb-2 text-white">Max-Salary</label>
+                  <input
+                    type="text"
+                    name="maxSalary"
+                    value={jobDetails.maxSalary}
+                    onChange={handleChange}
+                    className="p-2 w-full rounded shadow-lg"
+                    style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)" }}
+                    required
+                  />
+                </div>
+              </div>
               <div className="mb-4 text-left">
                 <label className="block mb-2 text-white">Position Type</label>
                 <select
@@ -146,6 +148,52 @@
                   <option value="part-time">Part-time</option>
                 </select>
               </div>
+              <div className="mb-4 text-left">
+                <button
+                  type="button"
+                  onClick={toggleDisabilityOptions}
+                  className="cursor-pointer transition-all bg-blue-600 text-white px-6 py-2 rounded-lg
+                  border-blue-700 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]
+                  hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+                >
+                  {showDisabilityOptions ? 'Hide Disability Options' : 'Select Disability Options'}
+                </button>
+                {showDisabilityOptions && (
+                  <fieldset className="mt-4 p-4 bg-blue-100 rounded-lg shadow-lg">
+                    <legend className="text-lg font-medium text-gray-900">Disability Options</legend>
+                    <div className="mt-4 space-y-2">
+                      {[
+                        { value: 'visual', label: 'Visual Disability' },
+                        { value: 'hearing', label: 'Deaf or Hard of Hearing' },
+                        { value: 'learning', label: 'Learning Disability' },
+                        { value: 'mental', label: 'Mental Disability' },
+                        { value: 'physical', label: 'Physical Disability (Orthopedic)' },
+                        { value: 'psychosocial', label: 'Psychosocial Disability' },
+                        { value: 'speech', label: 'Speech and Language Impairment' },
+                        { value: 'intellectual', label: 'Intellectual Disability' },
+                        { value: 'cancer', label: 'Cancer (RA11215)' },
+                        { value: 'rare', label: 'Rare Disease (RA10747)' }
+                      ].map(({ value, label }) => (
+                        <label key={value} htmlFor={value} className="flex cursor-pointer items-start gap-4">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={value}
+                              value={value}
+                              checked={selectedDisabilities.includes(value)}
+                              onChange={handleDisabilityChange}
+                              className="size-4 rounded border-gray-300"
+                            />
+                          </div>
+                          <div>
+                            <strong className="font-medium text-gray-900">{label}</strong>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                )}
+              </div>
               <button
                 type="submit"
                 className="cursor-pointer transition-all bg-green-500 text-white px-6 py-2 rounded-lg
@@ -153,77 +201,6 @@
                 hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
               >
                 Post Job
-              </button>
-            </form>
-          </div>
-        );
-      };
-
-      const renderUpdateJobListings = () => {
-        return (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Update Job Listing</h2>
-            <form
-              onSubmit={handleUpdateSubmit}
-              className="bg-blue-500 p-6 rounded shadow-md text-center"
-            >
-              <div className="mb-4 text-left">
-                <label className="block mb-2 text-white">Position Name</label>
-                <input
-                  type="text"
-                  name="positionName"
-                  value={updatedDetails.positionName}
-                  onChange={handleUpdateChange}
-                  className="p-2 w-full rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4 text-left">
-                <label className="block mb-2 text-white">Job Description</label>
-                <textarea
-                  name="jobDescription"
-                  value={updatedDetails.jobDescription}
-                  onChange={handleUpdateChange}
-                  className="p-2 w-full rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4 text-left">
-                <label className="block mb-2 text-white">Qualifications</label>
-                <textarea
-                  name="qualifications"
-                  value={updatedDetails.qualifications}
-                  onChange={handleUpdateChange}
-                  className="p-2 w-full rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4 text-left">
-                <label className="block mb-2 text-white">Salary</label>
-                <input
-                  type="text"
-                  name="salary"
-                  value={updatedDetails.salary}
-                  onChange={handleUpdateChange}
-                  className="p-2 w-full rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4 text-left">
-                <label className="block mb-2 text-white">Position Type</label>
-                <select
-                  name="positionType"
-                  value={updatedDetails.positionType}
-                  onChange={handleUpdateChange}
-                  className="p-2 w-full rounded"
-                  required
-                >
-                  <option value="full-time">Full-time</option>
-                  <option value="part-time">Part-time</option>
-                </select>
-              </div>
-              <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded">
-                Update Job
               </button>
             </form>
           </div>
