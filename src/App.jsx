@@ -13,6 +13,7 @@ import JobListingPage from './pages/JobListPage.jsx';
 import UserProfile from './pages/UserProfile.jsx';
 import CompanyProfile from './pages/CompanyProfile.jsx';
 import ApplyPg from './pages/ApplyPg.jsx';
+import Faq from './pages/Faq.jsx';
 
 
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/uprofile" element={<UserProfile/>} />
         <Route path="/cprofile" element={<CompanyProfile/>} />
         <Route path="/apply" element={<ApplyPg/>} />
+        <Route path="/faqs" element={<Faq/>} />
         
 
       </Routes>
