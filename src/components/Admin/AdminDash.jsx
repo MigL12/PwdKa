@@ -63,13 +63,105 @@ const FilterDropdown = ({ onFilterChange }) => {
   );
 };
 
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  return (
+    <ol className="flex justify-center gap-1 text-xs font-medium">
+      <li>
+        <button
+          onClick={handlePrevPage}
+          className="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900"
+        >
+          <span className="sr-only">Prev Page</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-3 w-3"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </li>
+
+      {Array.from({ length: totalPages }).map((_, index) => (
+        <li key={index}>
+          <button
+            onClick={() => onPageChange(index + 1)}
+            className={`block size-8 rounded border ${
+              index + 1 === currentPage
+                ? 'border-blue-600 bg-blue-600 text-white'
+                : 'border-gray-100 bg-white text-gray-900'
+            } text-center leading-8`}
+          >
+            {index + 1}
+          </button>
+        </li>
+      ))}
+
+      <li>
+        <button
+          onClick={handleNextPage}
+          className="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900"
+        >
+          <span className="sr-only">Next Page</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-3 w-3"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </li>
+    </ol>
+  );
+};
+
+const SearchBar = ({ searchQuery, onSearchChange }) => (
+  <input
+    type="text"
+    placeholder="Search..."
+    value={searchQuery}
+    onChange={(e) => onSearchChange(e.target.value)}
+    className="w-full p-2 mb-4 border border-gray-300 rounded shadow-sm focus:outline-none"
+  />
+);
+
 const AdminDashboard = () => {
   const [currentSection, setCurrentSection] = useState('home');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [filter, setFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Set the number of items per page to 6
 
   const handleFilterChange = (selectedFilter) => {
     setFilter(selectedFilter);
+  };
+
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
   };
 
   const sortData = (data) => {
@@ -83,6 +175,11 @@ const AdminDashboard = () => {
       default:
         return data;
     }
+  };
+
+  const paginateData = (data) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return data.slice(startIndex, startIndex + itemsPerPage);
   };
 
   const renderHome = () => {
@@ -391,17 +488,19 @@ const AdminDashboard = () => {
       },
     ];
 
-    const sortedUsers = sortData(users);
+    const filteredUsers = users.filter((user) =>
+      user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const sortedUsers = sortData(filteredUsers);
+    const paginatedUsers = paginateData(sortedUsers);
 
     return (
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-custom-blue">View All Users</h2>
-          <FilterDropdown onFilterChange={handleFilterChange} />
-        </div>
+        <h2 className="text-xl font-bold mb-4 text-custom-blue">View All Users</h2>
+        <SearchBar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
         <div className="flex flex-wrap gap-4">
-          {sortedUsers.length > 0 ? (
-            sortedUsers.map(user => (
+          {paginatedUsers.length > 0 ? (
+            paginatedUsers.map((user) => (
               <div key={user.id} className="flex-1 min-w-[300px] p-4 bg-blue-500 rounded-xl shadow-xl">
                 <div className="flex flex-col text-left text-white">
                   <img
@@ -436,9 +535,14 @@ const AdminDashboard = () => {
               </div>
             ))
           ) : (
-            <p className="text-white">No verified users found.</p>
+            <p className="text-white">No users found.</p>
           )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(sortedUsers.length / itemsPerPage)}
+          onPageChange={setCurrentPage}
+        />
       </div>
     );
   };
@@ -477,17 +581,19 @@ const AdminDashboard = () => {
       },
     ];
 
-    const sortedCompanies = sortData(companies);
+    const filteredCompanies = companies.filter((company) =>
+      company.companyName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const sortedCompanies = sortData(filteredCompanies);
+    const paginatedCompanies = paginateData(sortedCompanies);
 
     return (
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-custom-blue">View All Verified Companies</h2>
-          <FilterDropdown onFilterChange={handleFilterChange} />
-        </div>
+        <h2 className="text-xl font-bold mb-4 text-custom-blue">View All Verified Companies</h2>
+        <SearchBar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
         <div className="flex flex-wrap gap-4">
-          {sortedCompanies.length > 0 ? (
-            sortedCompanies.map(company => (
+          {paginatedCompanies.length > 0 ? (
+            paginatedCompanies.map((company) => (
               <div key={company.id} className="flex-1 min-w-[300px] p-4 bg-blue-500 rounded-xl shadow-xl">
                 <div className="flex flex-col text-left text-white">
                   <p className="font-semibold text-lg">Company Name:</p>
@@ -511,9 +617,14 @@ const AdminDashboard = () => {
               </div>
             ))
           ) : (
-            <p className="text-white">No verified companies found.</p>
+            <p className="text-white">No companies found.</p>
           )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(sortedCompanies.length / itemsPerPage)}
+          onPageChange={setCurrentPage}
+        />
       </div>
     );
   };
@@ -546,17 +657,19 @@ const AdminDashboard = () => {
       },
     ];
 
-    const sortedJobListings = sortData(jobListings);
+    const filteredJobListings = jobListings.filter((job) =>
+      job.jobName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const sortedJobListings = sortData(filteredJobListings);
+    const paginatedJobListings = paginateData(sortedJobListings);
 
     return (
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-custom-blue">View All Job Listings</h2>
-          <FilterDropdown onFilterChange={handleFilterChange} />
-        </div>
+        <h2 className="text-xl font-bold mb-4 text-custom-blue">View All Job Listings</h2>
+        <SearchBar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
         <div className="flex flex-wrap gap-4">
-          {sortedJobListings.length > 0 ? (
-            sortedJobListings.map(listing => (
+          {paginatedJobListings.length > 0 ? (
+            paginatedJobListings.map((listing) => (
               <div key={listing.id} className="flex-1 min-w-[300px] p-4 bg-blue-500 rounded-xl shadow-xl">
                 <div className="flex flex-col text-left text-white">
                   <p className="font-semibold text-lg">Company Name:</p>
@@ -580,6 +693,24 @@ const AdminDashboard = () => {
             <p className="text-white">No job listings found.</p>
           )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(sortedJobListings.length / itemsPerPage)}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+    );
+  };
+
+  const renderUpdateJobListings = () => {
+    return (
+      <div>
+        <h2 className="text-xl font-bold mb-4 text-custom-blue">Update Job Listings</h2>
+        <div className="p-6 bg-blue-500 rounded-xl shadow-xl text-center">
+          <p className="text-xl text-white">
+            This is where you can update job listings. Implement the update form and logic as needed.
+          </p>
+        </div>
       </div>
     );
   };
@@ -587,7 +718,7 @@ const AdminDashboard = () => {
   const renderDeleteUsers = () => {
     const user = {
       id: 1,
-      profilePicture: 'https://via.placeholder.com/150', // Placeholder image
+      profilePicture: 'https://via.placeholder.com/150',
       fullName: 'John Doe',
       pwdId: 'PWD123456',
       disability: 'Visual Impairment',
@@ -596,7 +727,7 @@ const AdminDashboard = () => {
       birthdate: '1990-01-01',
       contactNumber: '555-1234',
       email: 'johndoe@example.com',
-      password: 'password123', // Just for display purposes
+      password: 'password123',
     };
 
     return (
@@ -675,7 +806,7 @@ const AdminDashboard = () => {
       jobName: 'Software Engineer',
       description: 'Develop and maintain software solutions',
       address: '456 Business Ave',
-      city: 'Metropolis', // Just for display purposes
+      city: 'Metropolis',
     };
 
     return (
@@ -749,20 +880,7 @@ const AdminDashboard = () => {
             setIsSidebarOpen(false);
           }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 12l2-2m0 0l7-7 7 7m-7-7v18"
-            />
-          </svg>
+          Home
         </button>
         <button
           className="bg-gray-200 text-blue-900 rounded-xl py-2 px-4 mb-4 w-full shadow-md hover:shadow-xl hover:translate-y-1 hover:bg-gray-300 transition-all duration-200 ease-in-out"
@@ -798,7 +916,7 @@ const AdminDashboard = () => {
             setIsSidebarOpen(false);
           }}
         >
-          View all Users
+          View All Users
         </button>
         <button
           className="bg-gray-200 text-blue-900 rounded-xl py-2 px-4 mb-4 w-full shadow-md hover:shadow-xl hover:translate-y-1 hover:bg-gray-300 transition-all duration-200 ease-in-out"
@@ -810,7 +928,7 @@ const AdminDashboard = () => {
             setIsSidebarOpen(false);
           }}
         >
-          View all Company
+          View All Companies
         </button>
         <button
           className="bg-gray-200 text-blue-900 rounded-xl py-2 px-4 mb-4 w-full shadow-md hover:shadow-xl hover:translate-y-1 hover:bg-gray-300 transition-all duration-200 ease-in-out"
@@ -822,7 +940,7 @@ const AdminDashboard = () => {
             setIsSidebarOpen(false);
           }}
         >
-          View all Joblistings
+          View All Job Listings
         </button>
         <button
           className="bg-gray-200 text-blue-900 rounded-xl py-2 px-4 mb-4 w-full shadow-md hover:shadow-xl hover:translate-y-1 hover:bg-gray-300 transition-all duration-200 ease-in-out"
@@ -834,7 +952,7 @@ const AdminDashboard = () => {
             setIsSidebarOpen(false);
           }}
         >
-          Update Joblistings
+          Update Job Listings
         </button>
         <button
           className="bg-gray-200 text-blue-900 rounded-xl py-2 px-4 mb-4 w-full shadow-md hover:shadow-xl hover:translate-y-1 hover:bg-gray-300 transition-all duration-200 ease-in-out"
@@ -858,7 +976,7 @@ const AdminDashboard = () => {
             setIsSidebarOpen(false);
           }}
         >
-          Delete Joblistings
+          Delete Job Listings
         </button>
       </aside>
 
@@ -882,7 +1000,7 @@ const AdminDashboard = () => {
           {currentSection === 'viewAllUsers' && renderViewAllUsers()}
           {currentSection === 'viewAllCompany' && renderViewAllCompany()}
           {currentSection === 'viewAllJobListings' && renderViewAllJobListings()}
-          {currentSection === 'updateJobListings' && <div>Content for Update Joblistings</div>}
+          {currentSection === 'updateJobListings' && renderUpdateJobListings()}
           {currentSection === 'deleteUsers' && renderDeleteUsers()}
           {currentSection === 'deleteJobListings' && renderDeleteJobListings()}
         </div>
