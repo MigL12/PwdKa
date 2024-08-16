@@ -875,9 +875,7 @@ const AdminDashboard = () => {
       // Add more users as needed
     ];
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+
 
     const filteredUsers = users.filter((user) =>
       user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -977,9 +975,6 @@ const AdminDashboard = () => {
       // Add more job listings as needed
     ];
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
 
     const filteredJobListings = jobListings.filter((job) =>
       job.jobName.toLowerCase().includes(searchQuery.toLowerCase())
