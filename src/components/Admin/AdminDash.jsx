@@ -972,7 +972,7 @@ const AdminDashboard = () => {
         address: '456 Business Ave',
         city: 'Metropolis',
       },
-      // Add more job listings as needed
+      // Add more job listings as need
     ];
 
 
