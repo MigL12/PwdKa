@@ -155,6 +155,7 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6; // Set the number of items per page to 6
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const handleFilterChange = (selectedFilter) => {
     setFilter(selectedFilter);
@@ -703,14 +704,155 @@ const AdminDashboard = () => {
   };
 
   const renderUpdateJobListings = () => {
+    const jobListings = [
+      {
+        id: 1,
+        companyName: 'Acme Corporation',
+        jobName: 'Software Engineer',
+        description: 'Develop and maintain software solutions',
+        address: '456 Business Ave',
+        city: 'Metropolis',
+      },
+      {
+        id: 2,
+        companyName: 'Wayne Enterprises',
+        jobName: 'Product Manager',
+        description: 'Oversee product development from start to finish',
+        address: '1007 Mountain Drive',
+        city: 'Gotham',
+      },
+      {
+        id: 3,
+        companyName: 'Queen Industries',
+        jobName: 'Mechanical Engineer',
+        description: 'Design and develop mechanical systems',
+        address: 'Starling City',
+        city: 'Star City',
+      },
+    ];
+
+    const handleEditClick = (job) => {
+      setSelectedJob(job);
+    };
+
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setSelectedJob((prevJob) => ({
+        ...prevJob,
+        [name]: value,
+      }));
+    };
+
+    const handleUpdateJob = () => {
+      // Implement the logic to update the job listing in the database or state
+      console.log('Updated job listing:', selectedJob);
+      setSelectedJob(null); // Reset the form after updating
+    };
+
+    if (!jobListings || jobListings.length === 0) {
+      return (
+        <div className="p-6 bg-blue-500 rounded-xl shadow-xl text-center">
+          <p className="text-xl text-white">No job listings available to update.</p>
+        </div>
+      );
+    }
+
     return (
       <div>
         <h2 className="text-xl font-bold mb-4 text-custom-blue">Update Job Listings</h2>
-        <div className="p-6 bg-blue-500 rounded-xl shadow-xl text-center">
-          <p className="text-xl text-white">
-            This is where you can update job listings. Implement the update form and logic as needed.
-          </p>
-        </div>
+        {selectedJob ? (
+          <div className="p-4 bg-blue-500 rounded-xl shadow-xl">
+            <h3 className="text-2xl font-bold mb-4 text-white">Update Job Listing</h3>
+            <div className="flex flex-col text-left text-white">
+              <label className="font-semibold text-lg">Company Name:</label>
+              <input
+                type="text"
+                name="companyName"
+                value={selectedJob.companyName}
+                onChange={handleInputChange}
+                className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue p-2"
+              />
+
+              <label className="font-semibold text-lg">Job Name:</label>
+              <input
+                type="text"
+                name="jobName"
+                value={selectedJob.jobName}
+                onChange={handleInputChange}
+                className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue p-2"
+              />
+
+              <label className="font-semibold text-lg">Description:</label>
+              <textarea
+                name="description"
+                value={selectedJob.description}
+                onChange={handleInputChange}
+                className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue p-2"
+              />
+
+              <label className="font-semibold text-lg">Address:</label>
+              <input
+                type="text"
+                name="address"
+                value={selectedJob.address}
+                onChange={handleInputChange}
+                className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue p-2"
+              />
+
+              <label className="font-semibold text-lg">City:</label>
+              <input
+                type="text"
+                name="city"
+                value={selectedJob.city}
+                onChange={handleInputChange}
+                className="text-xl bg-custom-bg rounded-md text-custom-blue p-2"
+              />
+            </div>
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                onClick={handleUpdateJob}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setSelectedJob(null)}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-4">
+            {jobListings.map((listing) => (
+              <div key={listing.id} className="flex-1 min-w-[300px] p-4 bg-blue-500 rounded-xl shadow-xl">
+                <div className="flex flex-col text-left text-white">
+                  <p className="font-semibold text-lg">Company Name:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{listing.companyName}</p>
+
+                  <p className="font-semibold text-lg">Job Name:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{listing.jobName}</p>
+
+                  <p className="font-semibold text-lg">Description:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{listing.description}</p>
+
+                  <p className="font-semibold text-lg">Address:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{listing.address}</p>
+
+                  <p className="font-semibold text-lg">City:</p>
+                  <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{listing.city}</p>
+                </div>
+                <button
+                  onClick={() => handleEditClick(listing)}
+                  className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-all"
+                >
+                  Edit
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   };
