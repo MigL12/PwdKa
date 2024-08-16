@@ -858,142 +858,193 @@ const AdminDashboard = () => {
   };
 
   const renderDeleteUsers = () => {
-    const user = {
-      id: 1,
-      profilePicture: 'https://via.placeholder.com/150',
-      fullName: 'John Doe',
-      pwdId: 'PWD123456',
-      disability: 'Visual Impairment',
-      address: '123 Main St, Apt 4B',
-      city: 'Metropolis',
-      birthdate: '1990-01-01',
-      contactNumber: '555-1234',
-      email: 'johndoe@example.com',
-      password: 'password123',
-    };
+    const users = [
+      {
+        id: 1,
+        profilePicture: 'https://via.placeholder.com/150',
+        fullName: 'John Doe',
+        pwdId: 'PWD123456',
+        disability: 'Visual Impairment',
+        address: '123 Main St, Apt 4B',
+        city: 'Metropolis',
+        birthdate: '1990-01-01',
+        contactNumber: '555-1234',
+        email: 'johndoe@example.com',
+        password: 'password123',
+      },
+      // Add more users as needed
+    ];
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    const filteredUsers = users.filter((user) =>
+      user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const paginatedUsers = filteredUsers.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
 
     return (
       <div>
         <h2 className="text-xl font-bold mb-4 text-custom-blue text-center">Delete User</h2>
-        <div key={user.id} className="mb-6 p-4 bg-blue-500 rounded-xl shadow-xl text-center">
-          <h3 className="text-3xl font-bold mb-4 text-white">Single User</h3>
-          <p className="text-2xl mb-8 text-white">User Details</p>
-          <div className="flex justify-center">
-            <img
-              src={user.profilePicture}
-              alt={user.fullName}
-              className="w-24 h-24 rounded-full mb-4"
-            />
-          </div>
-          <div className="flex flex-col md:flex-row justify-between text-left text-white space-y-4 md:space-y-0">
-            <div className="flex-1 md:mr-4">
-              <p className="font-semibold text-lg">Full Name:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.fullName}</p>
+        <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <div className="flex flex-wrap gap-4">
+          {paginatedUsers.length > 0 ? (
+            paginatedUsers.map((user) => (
+              <div key={user.id} className="flex-1 min-w-[300px] p-4 bg-blue-500 rounded-xl shadow-xl">
+                <div className="flex flex-col text-left text-white">
+                  <img
+                    src={user.profilePicture}
+                    alt={user.fullName}
+                    className="w-24 h-24 rounded-full mb-4"
+                  />
+                  <p className="font-semibold text-lg">Full Name:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.fullName}</p>
 
-              <p className="font-semibold text-lg">PWD ID:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.pwdId}</p>
+                  <p className="font-semibold text-lg">PWD ID:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.pwdId}</p>
 
-              <p className="font-semibold text-lg">Disability:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.disability}</p>
+                  <p className="font-semibold text-lg">Disability:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.disability}</p>
 
-              <p className="font-semibold text-lg">Address:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.address}</p>
+                  <p className="font-semibold text-lg">Address:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.address}</p>
 
-              <p className="font-semibold text-lg">City:</p>
-              <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{user.city}</p>
-            </div>
-            <div className="flex-1 md:ml-4">
-              <p className="font-semibold text-lg">Birthdate:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.birthdate}</p>
+                  <p className="font-semibold text-lg">City:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.city}</p>
 
-              <p className="font-semibold text-lg">Contact Number:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.contactNumber}</p>
+                  <p className="font-semibold text-lg">Birthdate:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.birthdate}</p>
 
-              <p className="font-semibold text-lg">Email:</p>
-              <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.email}</p>
+                  <p className="font-semibold text-lg">Contact Number:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{user.contactNumber}</p>
 
-              <p className="font-semibold text-lg">Password:</p>
-              <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{user.password}</p>
-            </div>
-          </div>
-          <div className="flex justify-center items-center mt-8">
-            <button className="cursor-pointer transition-all bg-red-500 text-white px-6 py-2 rounded-lg
-              border-red-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]
-              hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+                  <p className="font-semibold text-lg">Email:</p>
+                  <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{user.email}</p>
+
+                  <p className="font-semibold text-lg">Password:</p>
+                  <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{user.password}</p>
+                </div>
+                <div className="flex justify-center items-center mt-8">
+                  <button className="cursor-pointer transition-all bg-red-500 text-white px-6 py-2 rounded-lg
+                    border-red-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]
+                    hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-10 w-10"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-white">No users found.</p>
+          )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredUsers.length / itemsPerPage)}
+          onPageChange={setCurrentPage}
+        />
       </div>
     );
   };
 
   const renderDeleteJobListings = () => {
-    const jobListing = {
-      id: 1,
-      companyName: 'Acme Corporation',
-      jobName: 'Software Engineer',
-      description: 'Develop and maintain software solutions',
-      address: '456 Business Ave',
-      city: 'Metropolis',
-    };
+    const jobListings = [
+      {
+        id: 1,
+        companyName: 'Acme Corporation',
+        jobName: 'Software Engineer',
+        description: 'Develop and maintain software solutions',
+        address: '456 Business Ave',
+        city: 'Metropolis',
+      },
+      // Add more job listings as needed
+    ];
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    const filteredJobListings = jobListings.filter((job) =>
+      job.jobName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const paginatedJobListings = filteredJobListings.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
 
     return (
       <div>
         <h2 className="text-xl font-bold mb-4 text-custom-blue">Delete Job Listing</h2>
-        <div key={jobListing.id} className="mb-6 p-4 bg-blue-500 rounded-xl shadow-xl">
-          <h3 className="text-3xl font-bold mb-4 text-white">Single Job Listing</h3>
-          <p className="text-2xl mb-8 text-white">Job Details</p>
-          <div className="flex flex-col text-left text-white">
-            <p className="font-semibold text-lg">Company Name:</p>
-            <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.companyName}</p>
+        <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <div className="flex flex-wrap gap-4">
+          {paginatedJobListings.length > 0 ? (
+            paginatedJobListings.map((jobListing) => (
+              <div key={jobListing.id} className="flex-1 min-w-[300px] p-4 bg-blue-500 rounded-xl shadow-xl">
+                <div className="flex flex-col text-left text-white">
+                  <p className="font-semibold text-lg">Company Name:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.companyName}</p>
 
-            <p className="font-semibold text-lg">Job Name:</p>
-            <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.jobName}</p>
+                  <p className="font-semibold text-lg">Job Name:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.jobName}</p>
 
-            <p className="font-semibold text-lg">Description:</p>
-            <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.description}</p>
+                  <p className="font-semibold text-lg">Description:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.description}</p>
 
-            <p className="font-semibold text-lg">Address:</p>
-            <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.address}</p>
+                  <p className="font-semibold text-lg">Address:</p>
+                  <p className="mb-2 text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.address}</p>
 
-            <p className="font-semibold text-lg">City:</p>
-            <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.city}</p>
-          </div>
-          <div className="flex justify-center items-center mt-8">
-            <button className="cursor-pointer transition-all bg-red-500 text-white px-6 py-2 rounded-lg
-              border-red-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]
-              hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+                  <p className="font-semibold text-lg">City:</p>
+                  <p className="text-xl bg-custom-bg rounded-md text-custom-blue">{jobListing.city}</p>
+                </div>
+                <div className="flex justify-center items-center mt-8">
+                  <button className="cursor-pointer transition-all bg-red-500 text-white px-6 py-2 rounded-lg
+                    border-red-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]
+                    hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-10 w-10"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-white">No job listings found.</p>
+          )}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredJobListings.length / itemsPerPage)}
+          onPageChange={setCurrentPage}
+        />
       </div>
     );
   };
