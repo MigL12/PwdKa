@@ -46,7 +46,7 @@ const FrequentlyAsk = () => {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto mt-10 p-8 bg-custom-bg rounded-lg shadow-lg">
       <h2 className="text-4xl font-bold mb-8 text-blue-600 text-center">Frequently Asked Questions</h2>
 
       <div className="bg-blue-100 p-6 rounded-lg shadow mb-8 text-center border border-blue-300">
